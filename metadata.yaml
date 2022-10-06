@@ -1,0 +1,12 @@
+# Copyright 2022 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+name: lte-core-interface
+display-name: |
+  LTE core interface.
+description: |
+  This charm library contains the Requires and Provides classes for handling the `lte-core`
+  interface.
+summary: |
+  This charm library contains the Requires and Provides classes for handling the `lte-core`
+  interface.

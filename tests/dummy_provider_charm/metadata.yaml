@@ -1,0 +1,13 @@
+# Copyright 2022 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+name: lte-core-provider
+
+description: |
+  Dummy lte-core provider.
+summary: |
+  Dummy lte-core provider.
+provides:
+  core:
+    interface: lte-core
+# TODO: check interface naming
