@@ -1,4 +1,5 @@
+#!/usr/bin/env python3
 # Copyright 2022 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-# TODO: Add tests for provider class.
+# TODO: Add dummy requirer charm.
