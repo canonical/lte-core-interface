@@ -3,7 +3,7 @@
 This charm library contains the Requires and Provides classes for handling the `lte-core`
 interface.
 
-> :Warning: Do not deploy this charm. It is meant to only be used as a charm library.
+> :warning: Do not deploy this charm. It is meant to only be used as a charm library.
 
 ## Getting Started
 From a charm directory, fetch the library using `charmcraft`:
