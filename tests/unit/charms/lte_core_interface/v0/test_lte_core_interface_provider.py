@@ -2,8 +2,8 @@
 # See LICENSE file for licensing details.
 
 
-from ipaddress import AddressValueError
 import unittest
+from ipaddress import AddressValueError
 
 import pytest
 from ops import testing
