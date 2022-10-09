@@ -9,7 +9,7 @@ from ops import testing
 testing.SIMULATE_CAN_CONNECT = True
 
 
-class TestMagmaCoreProvider(unittest.TestCase):
+class TestCoreRequirer(unittest.TestCase):
     def setUp(self):
         # TODO: write tests
         pass

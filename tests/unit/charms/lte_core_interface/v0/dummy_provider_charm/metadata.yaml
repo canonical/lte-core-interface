@@ -8,6 +8,5 @@ description: |
 summary: |
   Dummy lte-core provider.
 provides:
-  core:
+  lte-core:
     interface: lte-core
-# TODO: check interface naming

@@ -9,30 +9,89 @@ interface.
 ## Getting Started
 From a charm directory, fetch the library using `charmcraft`:
 
-# TODO: change this to the real URL once the library is published
+# TODO: publish the library
 ```shell
-charmcraft fetch-lib charms.lte_core.v0.lte_core
+charmcraft fetch-lib charms.lte_core_interface.v0.lte_core_interface
 ```
 
-# TODO: need for additional libraries in requirements.txt?
+Add the following libraries to the charm's `requirements.txt` file:
+- jsonschema
 
 ### Requirer charm
-The requirer charm is the one requiring to connect to an instance of the core
+The requirer charm is the one requiring to connect to the core
 from another charm that provides this interface.
 
-# TODO: fill requirer example
+Example:
+```python
+
+from ops.charm import CharmBase
+from ops.main import main
+
+from charm.lte_core_interface.v0.lte_core_interface import (
+    CoreAvailableEvent,
+    CoreRequires,
+)
+
+
+class DummyCoreRequirerCharm(CharmBase):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.core_requirer = CoreRequires(self, "lte-core")
+        self.framework.observe(
+            self.core_requirer.on.core_available,
+            self._on_core_available,
+        )
+
+    def _on_core_available(self, event: CoreAvailableEvent):
+        print(event.mme_ipv4_address)
+
+
+if __name__ == "__main__":
+    main(DummyCoreRequirerCharm)
+```
 
 ### Provider charm
 The provider charm is the one providing information about the core network
 for another charm that requires this interface.
 
-# TODO fill requirer example
+Example:
+```python
+
+from ops.charm import CharmBase
+from ops.main import main
+
+from charm.lte_core_interface.v0.lte_core_interface import (
+    CoreProvides,
+)
+
+
+class DummyCoreProviderCharm(CharmBase):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.core_provider = CoreProvides(self, "lte-core")
+        self.framework.observe(
+            self.on.lte_core_relation_joined, self._on_lte_core_relation_joined
+        )
+
+    def _on_lte_core_relation_joined(self, event: RelationJoinedEvent):
+        # TODO: do we need leader check?
+        if self.unit.is_leader():
+            self.core_provider.set_core_information(
+                mme_ipv4_address="mme ipv4 address from the core"
+            )
+
+
+if __name__ == "__main__":
+    main(DummyCoreProviderCharm)
+```
+
 """
 
 # TODO change to fstrings?
 
 
 import logging
+from ipaddress import AddressValueError, IPv4Address
 
 from jsonschema import exceptions, validate  # type: ignore[import]
 from ops.charm import CharmBase, CharmEvents, RelationChangedEvent
@@ -160,8 +219,12 @@ class CoreProvides(Object):
     @staticmethod
     def mme_ipv4_address_is_valid(mme_ipv4_address: str) -> bool:
         """Returns whether mme ipv4 address is valid."""
-        # TODO ip address validation
-        pass
+        # TODO: Is this approach ok?
+        try:
+            IPv4Address(mme_ipv4_address)
+            return True
+        except:  # noqa: E722
+            return False
 
     def set_core_information(self, mme_ipv4_address: str):
         """Sets mme_ipv4_address in the application relation data.
@@ -174,8 +237,8 @@ class CoreProvides(Object):
         if not self.charm.unit.is_leader():
             raise RuntimeError("Unit must be leader to set application relation data.")
         if not self.mme_ipv4_address_is_valid(mme_ipv4_address):
-            raise ValueError("Invalid MME ipv4 address.")
-        relation = self.model.get_relation(self.relationship_name)
-        if not relation:
-            raise RuntimeError("Relation %s not created yet", self.relationship_name)
-        relation.data[self.charm.app].update({"mme_ipv4_address": mme_ipv4_address})
+            raise AddressValueError("Invalid MME IPv4 address.")
+        if relation := self.model.get_relation(self.relationship_name):
+            relation.data[self.charm.app].update({"mme_ipv4_address": mme_ipv4_address})
+        else:
+            raise RuntimeError(f"Relation {self.relationship_name} not created yet.")

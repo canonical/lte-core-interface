@@ -8,6 +8,5 @@ description: |
 summary: |
   Dummy lte core requirer.
 requires:
-  core:
+  lte-core:
     interface: lte-core
-# TODO: check interface name
