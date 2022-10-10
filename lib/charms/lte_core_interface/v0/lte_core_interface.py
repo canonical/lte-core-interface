@@ -21,6 +21,7 @@ Add the following libraries to the charm's `requirements.txt` file:
 The requirer charm is the one requiring to connect to the core
 from another charm that provides this interface.
 
+# TODO: check example after tests
 Example:
 ```python
 
@@ -54,6 +55,7 @@ if __name__ == "__main__":
 The provider charm is the one providing information about the core network
 for another charm that requires this interface.
 
+# TODO: check example after tests
 Example:
 ```python
 
@@ -134,7 +136,7 @@ REQUIRER_JSON_SCHEMA = {
 
 
 class CoreAvailableEvent(EventBase):
-    """Charm event emitted when a core is available."""
+    """Charm event emitted when a core is available. It carries the mme ipv4 address."""
 
     def __init__(self, handle: Handle, mme_ipv4_address: str):
         """Init."""
@@ -153,7 +155,7 @@ class CoreAvailableEvent(EventBase):
 class CoreRequirerCharmEvents(CharmEvents):
     """List of events that the core requirer charm can leverage."""
 
-    core_available = EventSource(CoreAvailableEvent)
+    lte_core_available = EventSource(CoreAvailableEvent)
 
 
 class CoreRequires(Object):
@@ -202,7 +204,7 @@ class CoreRequires(Object):
                 event.relation.data[event.app],  # type: ignore[index]
             )
             return
-        self.on.core_available.emit(
+        self.on.lte_core_available.emit(
             mme_ipv4_address=remote_app_relation_data["mme_ipv4_address"],
         )
 

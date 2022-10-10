@@ -6,13 +6,12 @@
 """Charm the service."""
 
 from ops.charm import CharmBase
+from ops.main import main
 
 from lib.charms.lte_core_interface.v0.lte_core_interface import (
     CoreAvailableEvent,
     CoreRequires,
 )
-
-from .ops.main import main
 
 
 class DummyCoreRequirerCharm(CharmBase):
@@ -23,11 +22,11 @@ class DummyCoreRequirerCharm(CharmBase):
         super().__init__(*args)
         self.core_requirer = CoreRequires(self, "lte-core")
         self.framework.observe(
-            self.core_requirer.on.core_available,
-            self._on_core_available,
+            self.core_requirer.on.lte_core_available,
+            self._on_lte_core_available,
         )
 
-    def _on_core_available(self, event: CoreAvailableEvent):
+    def _on_lte_core_available(self, event: CoreAvailableEvent):
         pass
 
 
