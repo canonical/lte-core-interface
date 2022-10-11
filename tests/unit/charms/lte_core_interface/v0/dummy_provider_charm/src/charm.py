@@ -17,9 +17,10 @@ class DummyCoreProviderCharm(CharmBase):
         self.framework.observe(self.on.lte_core_relation_joined, self._on_lte_core_relation_joined)
 
     def _on_lte_core_relation_joined(self, event: RelationJoinedEvent):
-        # TODO: do we need leader check?
-        if self.unit.is_leader():
-            self.core_provider.set_core_information(mme_ipv4_address="0.0.0.0")
+        if not self.unit.is_leader():
+            event.defer()
+            return
+        self.core_provider.set_core_information(mme_ipv4_address="0.0.0.0")
 
 
 if __name__ == "__main__":

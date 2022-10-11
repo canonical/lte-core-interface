@@ -6,6 +6,11 @@
 This library contains the Requires and Provides classes for handling the `lte-core`
 interface.
 
+The motivation for creating this library comes from the need of relating charmed EPCs with
+charmed simulated enodeBs and user equipment (UEs), for testing purposes. The interface will share
+the IP address of the MME (Mobility Management Entity) from EPC the to the charm which contains the
+corresponding simulated enodeBs and UEs.
+
 ## Getting Started
 From a charm directory, fetch the library using `charmcraft`:
 
@@ -21,7 +26,6 @@ Add the following libraries to the charm's `requirements.txt` file:
 The requirer charm is the one requiring to connect to the core
 from another charm that provides this interface.
 
-# TODO: check example after tests
 Example:
 ```python
 
@@ -37,9 +41,9 @@ from charm.lte_core_interface.v0.lte_core_interface import (
 class DummyCoreRequirerCharm(CharmBase):
     def __init__(self, *args):
         super().__init__(*args)
-        self.core_requirer = CoreRequires(self, "lte-core")
+        self.lte_core_requirer = CoreRequires(self, "lte-core")
         self.framework.observe(
-            self.core_requirer.on.core_available,
+            self.lte_core_requirer.on.core_available,
             self._on_core_available,
         )
 
@@ -55,7 +59,6 @@ if __name__ == "__main__":
 The provider charm is the one providing information about the core network
 for another charm that requires this interface.
 
-# TODO: check example after tests
 Example:
 ```python
 
@@ -76,7 +79,6 @@ class DummyCoreProviderCharm(CharmBase):
         )
 
     def _on_lte_core_relation_joined(self, event: RelationJoinedEvent):
-        # TODO: do we need leader check?
         if self.unit.is_leader():
             self.core_provider.set_core_information(
                 mme_ipv4_address="mme ipv4 address from the core"
@@ -88,8 +90,6 @@ if __name__ == "__main__":
 ```
 
 """
-
-# TODO change to fstrings?
 
 
 import logging
@@ -113,7 +113,6 @@ LIBPATCH = 1
 logger = logging.getLogger(__name__)
 
 REQUIRER_JSON_SCHEMA = {
-    # TODO: Check URL
     "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "`lte-core` requirer root schema",
     "type": "object",
@@ -228,12 +227,12 @@ class CoreProvides(Object):
         except:  # noqa: E722
             return False
 
-    def set_core_information(self, mme_ipv4_address: str):
+    def set_core_information(self, mme_ipv4_address: str) -> None:
         """Sets mme_ipv4_address in the application relation data.
 
         Args:
             mme_ipv4_address: MME ipv4 address
-        Returns:b
+        Returns:
             None
         """
         if not self.charm.unit.is_leader():
