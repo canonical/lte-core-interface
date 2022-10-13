@@ -6,10 +6,10 @@
 This library contains the Requires and Provides classes for handling the `lte-core`
 interface.
 
-The motivation for creating this library comes from the need of relating charmed EPCs with
-charmed simulated enodeBs and user equipment (UEs), for testing purposes. The interface will share
-the IP address of the MME (Mobility Management Entity) from EPC the to the charm which contains the
-corresponding simulated enodeBs and UEs.
+The purpose of the library is to relate a charmed EPC (Provider) with charmed simulated enodeB and
+user equipment (UEs) (Requirer). The interface will share the IP address of the MME
+(Mobility Management Entity) from EPC to the charm which contains the corresponding
+simulated enodeBs and UEs.
 
 ## Getting Started
 From a charm directory, fetch the library using `charmcraft`:

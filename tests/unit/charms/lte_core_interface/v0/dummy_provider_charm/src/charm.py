@@ -14,11 +14,12 @@ class DummyCoreProviderCharm(CharmBase):
         """Charm the service."""
         super().__init__(*args)
         self.core_provider = CoreProvides(self, "lte-core")
-        self.framework.observe(self.on.lte_core_relation_joined, self._on_lte_core_relation_joined)
+        self.framework.observe(
+            self.on.lte_core_relation_changed, self._on_lte_core_relation_joined
+        )
 
     def _on_lte_core_relation_joined(self, event: RelationJoinedEvent):
         if not self.unit.is_leader():
-            event.defer()
             return
         self.core_provider.set_core_information(mme_ipv4_address="0.0.0.0")
 
