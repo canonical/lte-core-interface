@@ -235,8 +235,6 @@ class CoreProvides(Object):
         Returns:
             None
         """
-        if not self.charm.unit.is_leader():
-            raise RuntimeError("Unit must be leader to set application relation data.")
         if not self.mme_ipv4_address_is_valid(mme_ipv4_address):
             raise AddressValueError("Invalid MME IPv4 address.")
         if relation := self.model.get_relation(self.relationship_name):
