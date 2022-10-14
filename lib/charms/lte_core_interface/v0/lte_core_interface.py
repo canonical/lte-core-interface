@@ -220,11 +220,10 @@ class CoreProvides(Object):
     @staticmethod
     def mme_ipv4_address_is_valid(mme_ipv4_address: str) -> bool:
         """Returns whether mme ipv4 address is valid."""
-        # TODO: Is this approach ok?
         try:
             IPv4Address(mme_ipv4_address)
             return True
-        except:  # noqa: E722
+        except (AddressValueError):  # noqa: E722
             return False
 
     def set_core_information(self, mme_ipv4_address: str) -> None:
@@ -234,6 +233,8 @@ class CoreProvides(Object):
             mme_ipv4_address: MME ipv4 address
         Returns:
             None
+        Raises:
+            AddressValueError: If mme_ipv4_address is not a valid IPv4 address
         """
         if not self.mme_ipv4_address_is_valid(mme_ipv4_address):
             raise AddressValueError("Invalid MME IPv4 address.")
