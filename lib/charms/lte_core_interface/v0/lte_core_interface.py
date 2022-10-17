@@ -63,7 +63,7 @@ for another charm that requires this interface.
 Example:
 ```python
 
-from ops.charm import CharmBase, RelationChangedEvent
+from ops.charm import CharmBase, RelationJoinedEvent
 from ops.main import main
 
 from charm.lte_core_interface.v0.lte_core_interface import (
@@ -76,10 +76,10 @@ class DummyCoreProviderCharm(CharmBase):
         super().__init__(*args)
         self.core_provider = CoreProvides(self, "lte-core")
         self.framework.observe(
-            self.on.lte_core_relation_changed, self._on_lte_core_relation_changed
+            self.on.lte_core_relation_joined, self._on_lte_core_relation_joined
         )
 
-    def _on_lte_core_relation_changed(self, event: RelationChangedEvent) -> None:
+    def _on_lte_core_relation_joined(self, event: RelationJoinedEvent) -> None:
         if not self.unit.is_leader():
             return
         mme_ipv4_address = "some code for fetching the mme ipv4 address"
