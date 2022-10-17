@@ -41,14 +41,15 @@ from charm.lte_core_interface.v0.lte_core_interface import (
 class DummyCoreRequirerCharm(CharmBase):
     def __init__(self, *args):
         super().__init__(*args)
-        self.lte_core_requirer = CoreRequires(self, "lte-core")
+        self.core_requirer = CoreRequires(self, "lte-core")
         self.framework.observe(
-            self.lte_core_requirer.on.core_available,
-            self._on_core_available,
+            self.core_requirer.on.lte_core_available,
+            self._on_lte_core_available,
         )
 
-    def _on_core_available(self, event: CoreAvailableEvent):
-        print(event.mme_ipv4_address)
+    def _on_lte_core_available(self, event: CoreAvailableEvent):
+        mme_ipv4_address = event.mme_ipv4_address
+        <Do something with the mme_ipv4_address>
 
 
 if __name__ == "__main__":
@@ -62,7 +63,7 @@ for another charm that requires this interface.
 Example:
 ```python
 
-from ops.charm import CharmBase
+from ops.charm import CharmBase, RelationChangedEvent
 from ops.main import main
 
 from charm.lte_core_interface.v0.lte_core_interface import (
@@ -75,14 +76,14 @@ class DummyCoreProviderCharm(CharmBase):
         super().__init__(*args)
         self.core_provider = CoreProvides(self, "lte-core")
         self.framework.observe(
-            self.on.lte_core_relation_joined, self._on_lte_core_relation_joined
+            self.on.lte_core_relation_changed, self._on_lte_core_relation_changed
         )
 
-    def _on_lte_core_relation_joined(self, event: RelationJoinedEvent):
-        if self.unit.is_leader():
-            self.core_provider.set_core_information(
-                mme_ipv4_address="mme ipv4 address from the core"
-            )
+    def _on_lte_core_relation_changed(self, event: RelationChangedEvent) -> None:
+        if not self.unit.is_leader():
+            return
+        mme_ipv4_address = "some code for fetching the mme ipv4 address"
+        self.core_provider.set_core_information(mme_ipv4_address=mme_ipv4_address)
 
 
 if __name__ == "__main__":
@@ -90,7 +91,6 @@ if __name__ == "__main__":
 ```
 
 """
-
 
 import logging
 from ipaddress import AddressValueError, IPv4Address
@@ -124,7 +124,9 @@ REQUIRER_JSON_SCHEMA = {
     ],
     "properties": {
         "mme_ipv4_address": {
+            "description": "The IP address of the MME (Mobility Management Entity) from core.",  # noqa: E501
             "type": "string",
+            "format": "ipv4",
         },
     },
     "required": [
@@ -189,7 +191,7 @@ class CoreRequires(Object):
         Returns:
             None
         """
-        relation = self.model.get_relation(self.relationship_name)
+        relation = event.relation
         if not relation:
             logger.warning("No relation with name %s", self.relationship_name)
             return

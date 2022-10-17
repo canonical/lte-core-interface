@@ -25,7 +25,7 @@ class TestCoreProvider(unittest.TestCase):
         self.addCleanup(self.harness.cleanup)
         self.harness.begin()
 
-    def test_given_unit_is_leader_and_remote_unit_joined_relation_when_set_mme_address_then_data_is_added_to_application_databag(  # noqa: E501
+    def test_given_unit_is_leader_and_relation_changed_when_set_mme_address_then_data_is_added_to_application_databag(  # noqa: E501
         self,
     ):
         self.harness.set_leader(is_leader=True)
@@ -43,9 +43,10 @@ class TestCoreProvider(unittest.TestCase):
         relation_data = self.harness.get_relation_data(
             relation_id=relation_id, app_or_unit=self.harness.charm.app.name
         )
+
         self.assertEqual(relation_data["mme_ipv4_address"], mme_ipv4_address)
 
-    def test_given_unit_is_not_leader_and_remote_unit_joined_relation_when_set_mme_address_then_data_is_not_added_to_application_databag(  # noqa: E501
+    def test_given_unit_is_not_leader_and_relation_changed_when_set_mme_address_then_data_is_not_added_to_application_databag(  # noqa: E501
         self,
     ):
         self.harness.set_leader(is_leader=False)
@@ -63,18 +64,8 @@ class TestCoreProvider(unittest.TestCase):
         relation_data = self.harness.get_relation_data(
             relation_id=relation_id, app_or_unit=self.harness.charm.app.name
         )
+
         self.assertEqual(relation_data, {})
-
-    def test_given_relation_is_not_created_when_set_core_information_then_runtime_error_is_raised(  # noqa: E501
-        self,
-    ):
-        mme_ipv4_address = "0.0.0.0"
-        with pytest.raises(RuntimeError) as e:
-            self.harness.charm.core_provider.set_core_information(
-                mme_ipv4_address=mme_ipv4_address
-            )
-
-        self.assertEqual(str(e.value), "Relation lte-core not created yet.")
 
     def test_given_mme_address_is_not_valid_when_update_relation_data_then_value_error_is_raised(  # noqa: E501
         self,

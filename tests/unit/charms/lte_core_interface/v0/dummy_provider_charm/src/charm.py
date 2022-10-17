@@ -3,7 +3,7 @@
 # See LICENSE file for licensing details.
 
 
-from ops.charm import CharmBase, RelationJoinedEvent
+from ops.charm import CharmBase, RelationChangedEvent
 from ops.main import main
 
 from lib.charms.lte_core_interface.v0.lte_core_interface import CoreProvides
@@ -18,7 +18,7 @@ class DummyCoreProviderCharm(CharmBase):
             self.on.lte_core_relation_changed, self._on_lte_core_relation_changed
         )
 
-    def _on_lte_core_relation_changed(self, event: RelationJoinedEvent):
+    def _on_lte_core_relation_changed(self, event: RelationChangedEvent) -> None:
         if not self.unit.is_leader():
             return
         self.core_provider.set_core_information(mme_ipv4_address="0.0.0.0")
