@@ -220,7 +220,7 @@ class CoreProvides(Object):
         self.charm = charm
 
     @staticmethod
-    def mme_ipv4_address_is_valid(mme_ipv4_address: str) -> bool:
+    def _mme_ipv4_address_is_valid(mme_ipv4_address: str) -> bool:
         """Returns whether mme ipv4 address is valid."""
         try:
             IPv4Address(mme_ipv4_address)
@@ -238,9 +238,9 @@ class CoreProvides(Object):
         Raises:
             AddressValueError: If mme_ipv4_address is not a valid IPv4 address
         """
-        if not self.mme_ipv4_address_is_valid(mme_ipv4_address):
-            raise AddressValueError("Invalid MME IPv4 address.")
-        if relation := self.model.get_relation(self.relationship_name):
-            relation.data[self.charm.app].update({"mme_ipv4_address": mme_ipv4_address})
-        else:
+        if not self.model.get_relation(self.relationship_name):
             raise RuntimeError(f"Relation {self.relationship_name} not created yet.")
+        if not self._mme_ipv4_address_is_valid(mme_ipv4_address):
+            raise AddressValueError("Invalid MME IPv4 address.")
+        relation = self.model.get_relation(self.relationship_name)
+        relation.data[self.charm.app].update({"mme_ipv4_address": mme_ipv4_address})  # type: ignore[union-attr]  # noqa: E501
