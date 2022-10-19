@@ -24,7 +24,7 @@ Add the following libraries to the charm's `requirements.txt` file:
 
 ### Provider charm
 
-The provider charm is the one providing information about the core network
+The provider charm is the one providing information about the LTE core network
 for another charm that requires this interface.
 
 #### Example
@@ -35,14 +35,14 @@ from ops.charm import CharmBase, RelationJoinedEvent
 from ops.main import main
 
 from charm.lte_core_interface.v0.lte_core_interface import (
-    CoreProvides,
+    LTECoreProvides,
 )
 
 
-class DummyCoreProviderCharm(CharmBase):
+class DummyLTECoreProviderCharm(CharmBase):
     def __init__(self, *args):
         super().__init__(*args)
-        self.core_provider = CoreProvides(self, "lte-core")
+        self.lte_core_provider = LTECoreProvides(self, "lte-core")
         self.framework.observe(
             self.on.lte_core_relation_joined, self._on_lte_core_relation_joined
         )
@@ -51,16 +51,16 @@ class DummyCoreProviderCharm(CharmBase):
         if not self.unit.is_leader():
             return
         mme_ipv4_address = "some code for fetching the mme ipv4 address"
-        self.core_provider.set_core_information(mme_ipv4_address=mme_ipv4_address)
+        self.lte_core_provider.set_lte_core_information(mme_ipv4_address=mme_ipv4_address)
 
 
 if __name__ == "__main__":
-    main(DummyCoreProviderCharm)
+    main(DummyLTECoreProviderCharm)
 ```
 
 ### Requirer charm
 
-The requirer charm is the one requiring to connect to an instance of the core
+The requirer charm is the one requiring to connect to an instance of the LTE core
 from another charm that provides this interface.
 
 #### Example
@@ -71,25 +71,25 @@ from ops.charm import CharmBase
 from ops.main import main
 
 from charm.lte_core_interface.v0.lte_core_interface import (
-    CoreAvailableEvent,
-    CoreRequires,
+    LTECoreAvailableEvent,
+    LTECoreRequires,
 )
 
 
-class DummyCoreRequirerCharm(CharmBase):
+class DummyLTECoreRequirerCharm(CharmBase):
     def __init__(self, *args):
         super().__init__(*args)
-        self.core_requirer = CoreRequires(self, "lte-core")
+        self.lte_core_requirer = LTECoreRequires(self, "lte-core")
         self.framework.observe(
-            self.core_requirer.on.lte_core_available,
+            self.lte_core_requirer.on.lte_core_available,
             self._on_lte_core_available,
         )
 
-    def _on_lte_core_available(self, event: CoreAvailableEvent):
+    def _on_lte_core_available(self, event: LTECoreAvailableEvent):
         mme_ipv4_address = event.mme_ipv4_address
         <Do something with the mme_ipv4_address>
 
 
 if __name__ == "__main__":
-    main(DummyCoreRequirerCharm)
+    main(DummyLTECoreRequirerCharm)
 ```

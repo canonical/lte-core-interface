@@ -9,12 +9,12 @@ import pytest
 from ops import testing
 
 from tests.unit.charms.lte_core_interface.v0.dummy_provider_charm.src.charm import (
-    DummyCoreProviderCharm,
+    DummyLTECoreProviderCharm,
 )
 
 testing.SIMULATE_CAN_CONNECT = True
 
-BASE_CHARM_DIR = "tests.unit.charms.lte_core_interface.v0.dummy_requirer_charm.src.charm.DummyCoreRequirerCharm"  # noqa: E501
+BASE_CHARM_DIR = "tests.unit.charms.lte_core_interface.v0.dummy_requirer_charm.src.charm.DummyLTECoreRequirerCharm"  # noqa: E501
 
 
 class TestCoreProvider(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestCoreProvider(unittest.TestCase):
         self.relation_name = "lte-core"
         self.remote_app_name = "lte-core-requirer"
         self.remote_unit_name = f"{self.remote_app_name}/0"
-        self.harness = testing.Harness(DummyCoreProviderCharm)
+        self.harness = testing.Harness(DummyLTECoreProviderCharm)
         self.addCleanup(self.harness.cleanup)
         self.harness.begin()
 
@@ -72,19 +72,19 @@ class TestCoreProvider(unittest.TestCase):
             key_values={"mme_ipv4_address": mme_ipv4_address},
         )
         with pytest.raises(AddressValueError) as e:
-            self.harness.charm.core_provider.set_core_information(
+            self.harness.charm.lte_core_provider.set_lte_core_information(
                 mme_ipv4_address=mme_ipv4_address
             )
 
         self.assertEqual(str(e.value), "Invalid MME IPv4 address.")
 
-    def test_given_relation_not_created_when_charm_author_calls_set_core_information_then_runtime_error_is_raised(  # noqa: E501
+    def test_given_relation_not_created_when_charm_author_calls_set_lte_core_information_then_runtime_error_is_raised(  # noqa: E501
         self,
     ):
         self.harness.set_leader(is_leader=True)
         mme_ipv4_address = "0.0.0.0"
 
         with pytest.raises(RuntimeError):
-            self.harness.charm.core_provider.set_core_information(
+            self.harness.charm.lte_core_provider.set_lte_core_information(
                 mme_ipv4_address=mme_ipv4_address
             )

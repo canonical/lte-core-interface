@@ -9,26 +9,26 @@ from ops.charm import CharmBase
 from ops.main import main
 
 from lib.charms.lte_core_interface.v0.lte_core_interface import (
-    CoreAvailableEvent,
-    CoreRequires,
+    LTECoreAvailableEvent,
+    LTECoreRequires,
 )
 
 
-class DummyCoreRequirerCharm(CharmBase):
+class DummyLTECoreRequirerCharm(CharmBase):
     """Charm the service."""
 
     def __init__(self, *args):
         """Init."""
         super().__init__(*args)
-        self.core_requirer = CoreRequires(self, "lte-core")
+        self.lte_core_requirer = LTECoreRequires(self, "lte-core")
         self.framework.observe(
-            self.core_requirer.on.lte_core_available,
+            self.lte_core_requirer.on.lte_core_available,
             self._on_lte_core_available,
         )
 
-    def _on_lte_core_available(self, event: CoreAvailableEvent):
+    def _on_lte_core_available(self, event: LTECoreAvailableEvent):
         pass
 
 
 if __name__ == "__main__":
-    main(DummyCoreRequirerCharm)
+    main(DummyLTECoreRequirerCharm)

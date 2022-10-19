@@ -23,7 +23,7 @@ Add the following libraries to the charm's `requirements.txt` file:
 - jsonschema
 
 ### Requirer charm
-The requirer charm is the one requiring to connect to the core
+The requirer charm is the one requiring to connect to the LTE core
 from another charm that provides this interface.
 
 Example:
@@ -32,32 +32,32 @@ Example:
 from ops.charm import CharmBase
 from ops.main import main
 
-from charm.lte_core_interface.v0.lte_core_interface import (
-    CoreAvailableEvent,
-    CoreRequires,
+from lib.charms.lte_core_interface.v0.lte_core_interface import (
+    LTECoreAvailableEvent,
+    LTECoreRequires,
 )
 
 
-class DummyCoreRequirerCharm(CharmBase):
+class DummyLTECoreRequirerCharm(CharmBase):
     def __init__(self, *args):
         super().__init__(*args)
-        self.core_requirer = CoreRequires(self, "lte-core")
+        self.lte_core_requirer = LTECoreRequires(self, "lte-core")
         self.framework.observe(
-            self.core_requirer.on.lte_core_available,
+            self.lte_core_requirer.on.lte_core_available,
             self._on_lte_core_available,
         )
 
-    def _on_lte_core_available(self, event: CoreAvailableEvent):
+    def _on_lte_core_available(self, event: LTECoreAvailableEvent):
         mme_ipv4_address = event.mme_ipv4_address
         <Do something with the mme_ipv4_address>
 
 
 if __name__ == "__main__":
-    main(DummyCoreRequirerCharm)
+    main(DummyLTECoreRequirerCharm)
 ```
 
 ### Provider charm
-The provider charm is the one providing information about the core network
+The provider charm is the one providing information about the LTE core network
 for another charm that requires this interface.
 
 Example:
@@ -66,15 +66,15 @@ Example:
 from ops.charm import CharmBase, RelationJoinedEvent
 from ops.main import main
 
-from charm.lte_core_interface.v0.lte_core_interface import (
-    CoreProvides,
+from lib.charms.lte_core_interface.v0.lte_core_interface import (
+    LTECoreProvides,
 )
 
 
-class DummyCoreProviderCharm(CharmBase):
+class DummyLTECoreProviderCharm(CharmBase):
     def __init__(self, *args):
         super().__init__(*args)
-        self.core_provider = CoreProvides(self, "lte-core")
+        self.lte_core_provider = LTECoreProvides(self, "lte-core")
         self.framework.observe(
             self.on.lte_core_relation_joined, self._on_lte_core_relation_joined
         )
@@ -83,11 +83,11 @@ class DummyCoreProviderCharm(CharmBase):
         if not self.unit.is_leader():
             return
         mme_ipv4_address = "some code for fetching the mme ipv4 address"
-        self.core_provider.set_core_information(mme_ipv4_address=mme_ipv4_address)
+        self.lte_core_provider.set_lte_core_information(mme_ipv4_address=mme_ipv4_address)
 
 
 if __name__ == "__main__":
-    main(DummyCoreProviderCharm)
+    main(DummyLTECoreProviderCharm)
 ```
 
 """
@@ -124,7 +124,7 @@ REQUIRER_JSON_SCHEMA = {
     ],
     "properties": {
         "mme_ipv4_address": {
-            "description": "The IP address of the MME (Mobility Management Entity) from core.",  # noqa: E501
+            "description": "The IP address of the MME (Mobility Management Entity) from the LTE core.",  # noqa: E501
             "type": "string",
             "format": "ipv4",
         },
@@ -136,8 +136,8 @@ REQUIRER_JSON_SCHEMA = {
 }
 
 
-class CoreAvailableEvent(EventBase):
-    """Charm event emitted when a core is available. It carries the mme ipv4 address."""
+class LTECoreAvailableEvent(EventBase):
+    """Charm event emitted when a LTE core is available. It carries the mme ipv4 address."""
 
     def __init__(self, handle: Handle, mme_ipv4_address: str):
         """Init."""
@@ -153,16 +153,16 @@ class CoreAvailableEvent(EventBase):
         self.mme_ipv4_address = snapshot["mme_ipv4_address"]
 
 
-class CoreRequirerCharmEvents(CharmEvents):
-    """List of events that the core requirer charm can leverage."""
+class LTECoreRequirerCharmEvents(CharmEvents):
+    """List of events that the LTE core requirer charm can leverage."""
 
-    lte_core_available = EventSource(CoreAvailableEvent)
+    lte_core_available = EventSource(LTECoreAvailableEvent)
 
 
-class CoreRequires(Object):
-    """Class to be instantiated by the charm requiring the core."""
+class LTECoreRequires(Object):
+    """Class to be instantiated by the charm requiring the LTE core."""
 
-    on = CoreRequirerCharmEvents()
+    on = LTECoreRequirerCharmEvents()
 
     def __init__(self, charm: CharmBase, relationship_name: str):
         """Init."""
@@ -210,8 +210,8 @@ class CoreRequires(Object):
         )
 
 
-class CoreProvides(Object):
-    """Class to be instantiated by the charm providing the core."""
+class LTECoreProvides(Object):
+    """Class to be instantiated by the charm providing the LTE core."""
 
     def __init__(self, charm: CharmBase, relationship_name: str):
         """Init."""
@@ -228,7 +228,7 @@ class CoreProvides(Object):
         except (AddressValueError):  # noqa: E722
             return False
 
-    def set_core_information(self, mme_ipv4_address: str) -> None:
+    def set_lte_core_information(self, mme_ipv4_address: str) -> None:
         """Sets mme_ipv4_address in the application relation data.
 
         Args:
