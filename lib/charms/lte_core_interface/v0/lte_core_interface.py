@@ -192,9 +192,6 @@ class LTECoreRequires(Object):
             None
         """
         relation = event.relation
-        if not relation:
-            logger.warning("No relation with name %s", self.relationship_name)
-            return
         if not relation.app:
             logger.warning("No remote application in relation: %s", self.relationship_name)
             return
