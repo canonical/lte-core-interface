@@ -26,7 +26,7 @@ class TestCoreProvider(unittest.TestCase):
         self.addCleanup(self.harness.cleanup)
         self.harness.begin()
 
-    def test_given_unit_is_leader_and_relation_is_created_when_set_mme_address_then_data_is_added_to_application_databag(  # noqa: E501
+    def test_given_unit_is_leader_when_relation_is_created_then_data_is_added_to_application_databag(  # noqa: E501
         self,
     ):
         self.harness.set_leader(is_leader=True)
@@ -42,7 +42,7 @@ class TestCoreProvider(unittest.TestCase):
         )
         self.assertEqual(relation_data["mme_ipv4_address"], mme_ipv4_address)
 
-    def test_given_unit_is_not_leader_and_relation_is_created_when_set_mme_address_then_data_is_not_added_to_application_databag(  # noqa: E501
+    def test_given_unit_is_not_leader_when_relation_is_created_then_data_is_not_added_to_application_databag(  # noqa: E501
         self,
     ):
         self.harness.set_leader(is_leader=False)
@@ -78,7 +78,7 @@ class TestCoreProvider(unittest.TestCase):
 
         self.assertEqual(str(e.value), "Invalid MME IPv4 address.")
 
-    def test_given_relation_not_created_when_charm_author_calls_set_lte_core_information_then_runtime_error_is_raised(  # noqa: E501
+    def test_given_relation_not_created_when_set_lte_core_information_then_runtime_error_is_raised(  # noqa: E501
         self,
     ):
         self.harness.set_leader(is_leader=True)

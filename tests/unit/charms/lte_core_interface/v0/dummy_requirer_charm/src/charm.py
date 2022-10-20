@@ -5,13 +5,12 @@
 
 """Charm the service."""
 
-from ops.charm import CharmBase
-from ops.main import main
-
-from lib.charms.lte_core_interface.v0.lte_core_interface import (
+from charms.lte_core_interface.v0.lte_core_interface import (
     LTECoreAvailableEvent,
     LTECoreRequires,
 )
+from ops.charm import CharmBase
+from ops.main import main
 
 
 class DummyLTECoreRequirerCharm(CharmBase):

@@ -25,7 +25,7 @@ class TestLTECoreRequirer(unittest.TestCase):
         self.harness.begin()
 
     @patch(f"{BASE_CHARM_PATH}._on_lte_core_available")
-    def test_given_valid_lte_core_information_in_relation_data_when_relation_changed_then_core_available_event_emitted(  # noqa: E501
+    def test_given_lte_core_information_not_in_relation_data_when_relation_changed_then_on_lte_core_available_not_called(  # noqa: E501
         self, patch_on_lte_core_available
     ):
         mme_ipv4_address = "0.0.0.0"

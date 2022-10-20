@@ -3,10 +3,9 @@
 # See LICENSE file for licensing details.
 
 
+from charms.lte_core_interface.v0.lte_core_interface import LTECoreProvides
 from ops.charm import CharmBase, RelationJoinedEvent
 from ops.main import main
-
-from lib.charms.lte_core_interface.v0.lte_core_interface import LTECoreProvides
 
 
 class DummyLTECoreProviderCharm(CharmBase):

@@ -7,13 +7,21 @@ on:
 
 jobs:
   charmhub-upload:
-    if: github.ref_name == 'main'
     runs-on: ubuntu-20.04
     name: Charmhub upload lib
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Wait for CI to succeed
+        uses: lewagon/wait-on-check-action@v1.1.2
+        with:
+          ref: main
+          check-name: "CI"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 20
+
+      - name: Check libraries
       - uses: canonical/charming-actions/upload-charm@2.0.0-rc
         with:
           credentials: "${{ secrets.CHARMCRAFT_AUTH }}"
