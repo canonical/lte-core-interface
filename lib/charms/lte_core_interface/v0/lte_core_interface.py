@@ -14,7 +14,6 @@ simulated enodeBs and UEs.
 ## Getting Started
 From a charm directory, fetch the library using `charmcraft`:
 
-# TODO: publish the library
 ```shell
 charmcraft fetch-lib charms.lte_core_interface.v0.lte_core_interface
 ```
@@ -107,7 +106,7 @@ LIBAPI = 0
 
 # Increment this PATCH version before using `charmcraft publish-lib` or reset
 # to 0 if you are raising the major API version
-LIBPATCH = 1
+LIBPATCH = 2
 
 
 logger = logging.getLogger(__name__)
