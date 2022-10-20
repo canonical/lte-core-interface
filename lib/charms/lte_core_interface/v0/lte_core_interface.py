@@ -106,7 +106,7 @@ LIBAPI = 0
 
 # Increment this PATCH version before using `charmcraft publish-lib` or reset
 # to 0 if you are raising the major API version
-LIBPATCH = 2
+LIBPATCH = 3
 
 
 logger = logging.getLogger(__name__)
@@ -198,7 +198,7 @@ class LTECoreRequires(Object):
         if not self._relation_data_is_valid(dict(remote_app_relation_data)):
             logger.warning(
                 "Provider relation data did no pass JSON Schema validation: \n%s",
-                event.relation.data[event.app],  # type: ignore[index]
+                event.relation.app[event.app],
             )
             return
         self.on.lte_core_available.emit(
