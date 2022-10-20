@@ -17,7 +17,7 @@ jobs:
         uses: lewagon/wait-on-check-action@v1.1.2
         with:
           ref: main
-          check-name: "CI"
+          check-name: "Unit tests"
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 20
 
