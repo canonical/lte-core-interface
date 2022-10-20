@@ -1,0 +1,36 @@
+name: Upload lte-core-interface-lib
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  charmhub-upload:
+    runs-on: ubuntu-20.04
+    name: Charmhub upload lib
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Wait for CI to succeed
+        uses: lewagon/wait-on-check-action@v1.1.2
+        with:
+          ref: main
+          check-name: "Unit tests"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 20
+
+      - name: Check libraries
+      - uses: canonical/charming-actions/upload-charm@2.0.0-rc
+        with:
+          credentials: "${{ secrets.CHARMCRAFT_AUTH }}"
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          channel: "edge"
+          upload-image: "false"
+
+      - name: Publish libs
+        env:
+          CHARMCRAFT_AUTH: "${{ secrets.CHARMCRAFT_AUTH }}"
+        run: |
+          charmcraft publish-lib charms.lte_core_interface.v0.lte_core_interface
