@@ -34,7 +34,7 @@ for another charm that requires this interface.
 from ops.charm import CharmBase, RelationJoinedEvent
 from ops.main import main
 
-from charm.lte_core_interface.v0.lte_core_interface import (
+from charms.lte_core_interface.v0.lte_core_interface import (
     LTECoreProvides,
 )
 
@@ -70,7 +70,7 @@ from another charm that provides this interface.
 from ops.charm import CharmBase
 from ops.main import main
 
-from charm.lte_core_interface.v0.lte_core_interface import (
+from charms.lte_core_interface.v0.lte_core_interface import (
     LTECoreAvailableEvent,
     LTECoreRequires,
 )
