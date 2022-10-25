@@ -89,7 +89,6 @@ class DummyLTECoreRequirerCharm(CharmBase):
         mme_ipv4_address = event.mme_ipv4_address
         <Do something with the mme_ipv4_address>
 
-
 if __name__ == "__main__":
     main(DummyLTECoreRequirerCharm)
 ```
