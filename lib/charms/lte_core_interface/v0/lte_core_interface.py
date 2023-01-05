@@ -81,8 +81,11 @@ class DummyLTECoreProviderCharm(CharmBase):
     def _on_lte_core_relation_joined(self, event: RelationJoinedEvent) -> None:
         if not self.unit.is_leader():
             return
-        mme_ipv4_address = "some code for fetching the mme ipv4 address"
-        self.lte_core_provider.set_lte_core_information(mme_ipv4_address=mme_ipv4_address)
+        mme_ipv4_address = "<Here goes your code for fetching the MME IPv4 address>"
+        try:
+            self.lte_core_provider.set_lte_core_information(mme_ipv4_address=mme_ipv4_address)
+        except AddressValueError:
+            self.unit.status = BlockedStatus("Invalid MME IPv4 address.")
 
 
 if __name__ == "__main__":
@@ -97,7 +100,6 @@ from ipaddress import AddressValueError, IPv4Address
 from jsonschema import exceptions, validate  # type: ignore[import]
 from ops.charm import CharmBase, CharmEvents, RelationChangedEvent
 from ops.framework import EventBase, EventSource, Handle, Object
-from ops.model import BlockedStatus
 
 # The unique Charmhub library identifier, never change it
 LIBID = "3fbbdca922ec4ddd9598c3382034ad61"
@@ -236,7 +238,6 @@ class LTECoreProvides(Object):
         if not self.model.get_relation(self.relationship_name):
             raise RuntimeError(f"Relation {self.relationship_name} not created yet.")
         if not self._mme_ipv4_address_is_valid(mme_ipv4_address):
-            self.charm.unit.status = BlockedStatus("Invalid MME IPv4 address.")
             raise AddressValueError("Invalid MME IPv4 address.")
         relation = self.model.get_relation(self.relationship_name)
         relation.data[self.charm.app].update({"mme_ipv4_address": mme_ipv4_address})  # type: ignore[union-attr]  # noqa: E501

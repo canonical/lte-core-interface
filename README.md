@@ -31,27 +31,29 @@ for another charm that requires this interface.
 
 ```python
 
+from ipaddress import AddressValueError
+
+from charms.lte_core_interface.v0.lte_core_interface import LTECoreProvides
 from ops.charm import CharmBase, RelationJoinedEvent
 from ops.main import main
-
-from charms.lte_core_interface.v0.lte_core_interface import (
-    LTECoreProvides,
-)
+from ops.model import BlockedStatus
 
 
 class DummyLTECoreProviderCharm(CharmBase):
     def __init__(self, *args):
+        """Charm the service."""
         super().__init__(*args)
         self.lte_core_provider = LTECoreProvides(self, "lte-core")
-        self.framework.observe(
-            self.on.lte_core_relation_joined, self._on_lte_core_relation_joined
-        )
+        self.framework.observe(self.on.lte_core_relation_joined, self._on_lte_core_relation_joined)
 
     def _on_lte_core_relation_joined(self, event: RelationJoinedEvent) -> None:
         if not self.unit.is_leader():
             return
-        mme_ipv4_address = "some code for fetching the mme ipv4 address"
-        self.lte_core_provider.set_lte_core_information(mme_ipv4_address=mme_ipv4_address)
+        mme_ipv4_address = "<Here goes your code for fetching the MME IPv4 address>"
+        try:
+            self.lte_core_provider.set_lte_core_information(mme_ipv4_address=mme_ipv4_address)
+        except AddressValueError:
+            self.unit.status = BlockedStatus("Invalid MME IPv4 address.")
 
 
 if __name__ == "__main__":
@@ -87,7 +89,7 @@ class DummyLTECoreRequirerCharm(CharmBase):
 
     def _on_lte_core_available(self, event: LTECoreAvailableEvent):
         mme_ipv4_address = event.mme_ipv4_address
-        <Do something with the mme_ipv4_address>
+        # Do something with the mme_ipv4_address
 
 
 if __name__ == "__main__":

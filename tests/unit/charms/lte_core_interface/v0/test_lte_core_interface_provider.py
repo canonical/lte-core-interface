@@ -4,6 +4,7 @@
 
 import unittest
 from ipaddress import AddressValueError
+from unittest.mock import Mock, patch
 
 import pytest
 from ops import testing
@@ -21,7 +22,7 @@ BASE_CHARM_DIR = "tests.unit.charms.lte_core_interface.v0.dummy_requirer_charm.s
 class TestCoreProvider(unittest.TestCase):
     def setUp(self):
         self.relation_name = "lte-core"
-        self.remote_app_name = "lte-core-requirer"
+        self.remote_app_name = "dummy-lte-core-requirer"
         self.remote_unit_name = f"{self.remote_app_name}/0"
         self.harness = testing.Harness(DummyLTECoreProviderCharm)
         self.addCleanup(self.harness.cleanup)
@@ -74,18 +75,20 @@ class TestCoreProvider(unittest.TestCase):
 
         self.assertEqual(str(e.value), "Invalid MME IPv4 address.")
 
+    @patch(
+        "charms.lte_core_interface.v0.lte_core_interface.LTECoreProvides.set_lte_core_information"
+    )
     def test_given_mme_address_is_not_valid_when_update_relation_data_then_status_is_blocked(  # noqa: E501
-        self,
+        self, patch_set_lte_core_information
     ):
         self.harness.set_leader(is_leader=True)
-        mme_ipv4_address = "not an ipv4 address"
+        patch_set_lte_core_information.side_effect = AddressValueError("Invalid MME IPv4 address.")
         self.harness.add_relation(
             relation_name=self.relation_name, remote_app=self.remote_app_name
         )
-        with pytest.raises(AddressValueError):
-            self.harness.charm.lte_core_provider.set_lte_core_information(
-                mme_ipv4_address=mme_ipv4_address
-            )
+        relation_joined_event = Mock()
+        self.harness.charm._on_lte_core_relation_joined(relation_joined_event)
+
         self.assertEqual(
             self.harness.charm.unit.status, BlockedStatus("Invalid MME IPv4 address.")
         )
