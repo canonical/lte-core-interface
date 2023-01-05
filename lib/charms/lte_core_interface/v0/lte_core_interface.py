@@ -97,6 +97,7 @@ from ipaddress import AddressValueError, IPv4Address
 from jsonschema import exceptions, validate  # type: ignore[import]
 from ops.charm import CharmBase, CharmEvents, RelationChangedEvent
 from ops.framework import EventBase, EventSource, Handle, Object
+from ops.model import BlockedStatus
 
 # The unique Charmhub library identifier, never change it
 LIBID = "3fbbdca922ec4ddd9598c3382034ad61"
@@ -177,8 +178,7 @@ class LTECoreRequires(Object):
         try:
             validate(instance=remote_app_relation_data, schema=REQUIRER_JSON_SCHEMA)
             return True
-        except exceptions.ValidationError as e:
-            logger.error("Invalid relation data: %s", e)
+        except exceptions.ValidationError:
             return False
 
     def _on_relation_changed(self, event: RelationChangedEvent) -> None:
@@ -196,9 +196,8 @@ class LTECoreRequires(Object):
             return
         remote_app_relation_data = relation.data[relation.app]
         if not self._relation_data_is_valid(dict(remote_app_relation_data)):
-            logger.warning(
-                "Provider relation data did no pass JSON Schema validation: \n%s",
-                event.relation.app[event.app],
+            logger.error(
+                "Provider relation data did not pass JSON schema validation."  # noqa: E501
             )
             return
         self.on.lte_core_available.emit(
@@ -237,6 +236,7 @@ class LTECoreProvides(Object):
         if not self.model.get_relation(self.relationship_name):
             raise RuntimeError(f"Relation {self.relationship_name} not created yet.")
         if not self._mme_ipv4_address_is_valid(mme_ipv4_address):
+            self.charm.unit.status = BlockedStatus("Invalid MME IPv4 address.")
             raise AddressValueError("Invalid MME IPv4 address.")
         relation = self.model.get_relation(self.relationship_name)
         relation.data[self.charm.app].update({"mme_ipv4_address": mme_ipv4_address})  # type: ignore[union-attr]  # noqa: E501
