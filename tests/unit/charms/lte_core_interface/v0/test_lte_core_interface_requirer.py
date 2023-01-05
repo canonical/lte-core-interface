@@ -93,4 +93,3 @@ class TestLTECoreRequirer(unittest.TestCase):
         args, _ = patch_on_lte_core_available.call_args
         lte_core_available_event = args[0]
         self.assertEqual(lte_core_available_event.mme_ipv4_address, mme_ipv4_address)
-
