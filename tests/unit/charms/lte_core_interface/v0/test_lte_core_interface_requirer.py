@@ -34,11 +34,6 @@ class TestLTECoreRequirer(unittest.TestCase):
         remote_app_relation_data = {"mme_ipv4_address": mme_ipv4_address}
         expected_log = "Provider relation data did not pass JSON schema validation."  # noqa: E501
 
-        self.harness.update_relation_data(
-            relation_id=relation_id,
-            app_or_unit=self.remote_app,
-            key_values=remote_app_relation_data,
-        )
         with self.assertLogs() as captured:
             self.harness.update_relation_data(
                 relation_id=relation_id,
