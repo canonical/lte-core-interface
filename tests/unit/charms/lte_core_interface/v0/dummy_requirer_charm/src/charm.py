@@ -25,8 +25,9 @@ class DummyLTECoreRequirerCharm(CharmBase):
             self._on_lte_core_available,
         )
 
-    def _on_lte_core_available(self, event: LTECoreAvailableEvent):
-        pass
+    def _on_lte_core_available(self, event: LTECoreAvailableEvent) -> None:
+        mme_ipv4_address = event.mme_ipv4_address  # noqa: F841
+        # Here must be the code which uses the mme_ipv4_address
 
 
 if __name__ == "__main__":
