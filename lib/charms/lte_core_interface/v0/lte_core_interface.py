@@ -97,7 +97,7 @@ if __name__ == "__main__":
 import logging
 from ipaddress import AddressValueError, IPv4Address
 
-from jsonschema import exceptions, validate  # type: ignore[import]
+from jsonschema import FormatChecker, exceptions, validate  # type: ignore[import]
 from ops.charm import CharmBase, CharmEvents, RelationChangedEvent
 from ops.framework import EventBase, EventSource, Handle, Object
 
@@ -178,7 +178,11 @@ class LTECoreRequires(Object):
     @staticmethod
     def _relation_data_is_valid(remote_app_relation_data: dict) -> bool:
         try:
-            validate(instance=remote_app_relation_data, schema=REQUIRER_JSON_SCHEMA)
+            validate(
+                instance=remote_app_relation_data,
+                schema=REQUIRER_JSON_SCHEMA,
+                format_checker=FormatChecker(),
+            )
             return True
         except exceptions.ValidationError:
             return False

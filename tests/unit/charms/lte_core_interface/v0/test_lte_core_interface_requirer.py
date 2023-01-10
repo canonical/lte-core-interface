@@ -61,6 +61,22 @@ class TestLTECoreRequirer(unittest.TestCase):
         patch_on_lte_core_available.assert_called()
 
     @patch(f"{BASE_CHARM_PATH}._on_lte_core_available")
+    def test_given_lte_core_information_not_in_relation_data_when_relation_changed_and_schema_validation_fails_then_core_available_event_not_emitted(  # noqa: E501
+        self, patch_on_lte_core_available
+    ):
+        wrong_mme_ipv4_address = "invalid ip address"
+        relation_id = self.harness.add_relation(self.relation_name, remote_app=self.remote_app)
+        remote_app_relation_data = {"mme_ipv4_address": wrong_mme_ipv4_address}
+
+        self.harness.update_relation_data(
+            relation_id=relation_id,
+            app_or_unit=self.remote_app,
+            key_values=remote_app_relation_data,
+        )
+
+        patch_on_lte_core_available.assert_not_called()
+
+    @patch(f"{BASE_CHARM_PATH}._on_lte_core_available")
     def test_given_lte_core_information_not_in_relation_data_when_relation_changed_then_core_available_event_not_emitted(  # noqa: E501
         self, patch_on_lte_core_available
     ):
