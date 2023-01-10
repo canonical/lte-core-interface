@@ -61,7 +61,7 @@ class TestLTECoreRequirer(unittest.TestCase):
         patch_on_lte_core_available.assert_called()
 
     @patch(f"{BASE_CHARM_PATH}._on_lte_core_available")
-    def test_given_lte_core_information_not_in_relation_data_when_relation_changed_and_schema_validation_fails_then_core_available_event_not_emitted(  # noqa: E501
+    def test_given_lte_core_information_in_relation_data_when_relation_changed_and_schema_validation_fails_then_core_available_event_not_emitted(  # noqa: E501
         self, patch_on_lte_core_available
     ):
         wrong_mme_ipv4_address = "invalid ip address"
