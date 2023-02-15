@@ -109,7 +109,7 @@ LIBAPI = 0
 
 # Increment this PATCH version before using `charmcraft publish-lib` or reset
 # to 0 if you are raising the major API version
-LIBPATCH = 5
+LIBPATCH = 6
 
 
 logger = logging.getLogger(__name__)
@@ -226,7 +226,7 @@ class LTECoreProvides(Object):
         try:
             IPv4Address(mme_ipv4_address)
             return True
-        except (AddressValueError):  # noqa: E722
+        except AddressValueError:  # noqa: E722
             return False
 
     def set_lte_core_information(self, mme_ipv4_address: str) -> None:
