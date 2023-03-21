@@ -18,7 +18,9 @@ class DummyLTECoreProviderCharm(CharmBase):
     def _on_lte_core_relation_joined(self, event: RelationJoinedEvent) -> None:
         if not self.unit.is_leader():
             return
-        self.lte_core_provider.set_lte_core_information(mme_ipv4_address="0.0.0.0")
+        self.lte_core_provider.set_lte_core_information(
+            mme_ipv4_address="0.0.0.0", relation_id=event.relation.id
+        )
 
 
 if __name__ == "__main__":
