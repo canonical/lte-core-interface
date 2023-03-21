@@ -83,7 +83,9 @@ class DummyLTECoreProviderCharm(CharmBase):
             return
         mme_ipv4_address = "<Here goes your code for fetching the MME IPv4 address>"
         try:
-            self.lte_core_provider.set_lte_core_information(mme_ipv4_address=mme_ipv4_address)
+            self.lte_core_provider.set_lte_core_information(
+              mme_ipv4_address=mme_ipv4_address, relation_id=event.relation.id
+            )
         except AddressValueError:
             self.unit.status = BlockedStatus("Invalid MME IPv4 address.")
 
