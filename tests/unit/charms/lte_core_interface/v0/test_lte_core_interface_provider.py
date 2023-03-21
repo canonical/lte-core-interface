@@ -42,7 +42,7 @@ class TestCoreProvider(unittest.TestCase):
         )
         self.assertEqual(relation_data["mme_ipv4_address"], mme_ipv4_address)
 
-    def test_given_multiple_requirers_when_relation_is_created_then_data_is_added_to_application_databag(  # noqa: E501
+    def test_given_existing_lte_core_requirer_when_new_lte_core_relation_is_created_then_data_is_added_to_application_databag(  # noqa: E501
         self,
     ):
         self.harness.set_leader(is_leader=True)
