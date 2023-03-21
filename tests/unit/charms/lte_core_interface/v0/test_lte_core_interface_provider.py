@@ -42,6 +42,29 @@ class TestCoreProvider(unittest.TestCase):
         )
         self.assertEqual(relation_data["mme_ipv4_address"], mme_ipv4_address)
 
+    def test_given_existing_lte_core_requirer_when_new_lte_core_relation_is_created_then_data_is_added_to_application_databag(  # noqa: E501
+        self,
+    ):
+        self.harness.set_leader(is_leader=True)
+        mme_ipv4_address = "0.0.0.0"
+        relation_1_remote_app_name = "srsran-1"
+        relation_1_remote_unit_name = "srsran-1/0"
+        relation_1_id = self.harness.add_relation(
+            relation_name=self.relation_name, remote_app=relation_1_remote_app_name
+        )
+        self.harness.add_relation_unit(relation_1_id, relation_1_remote_unit_name)
+        relation_2_remote_app_name = "srsran-2"
+        relation_2_remote_unit_name = "srsran-2/0"
+        relation_2_id = self.harness.add_relation(
+            relation_name=self.relation_name, remote_app=relation_2_remote_app_name
+        )
+        self.harness.add_relation_unit(relation_2_id, relation_2_remote_unit_name)
+
+        relation_2_data = self.harness.get_relation_data(
+            relation_id=relation_1_id, app_or_unit=self.harness.charm.app.name
+        )
+        self.assertEqual(relation_2_data["mme_ipv4_address"], mme_ipv4_address)
+
     def test_given_unit_is_not_leader_when_relation_is_created_then_data_is_not_added_to_application_databag(  # noqa: E501
         self,
     ):
@@ -63,12 +86,13 @@ class TestCoreProvider(unittest.TestCase):
     ):
         self.harness.set_leader(is_leader=True)
         mme_ipv4_address = "invalid ipv4 address"
-        self.harness.add_relation(
+        relation_id = self.harness.add_relation(
             relation_name=self.relation_name, remote_app=self.remote_app_name
         )
         with pytest.raises(AddressValueError) as e:
             self.harness.charm.lte_core_provider.set_lte_core_information(
-                mme_ipv4_address=mme_ipv4_address
+                mme_ipv4_address=mme_ipv4_address,
+                relation_id=relation_id,
             )
 
         self.assertEqual(str(e.value), "Invalid MME IPv4 address.")
@@ -78,11 +102,12 @@ class TestCoreProvider(unittest.TestCase):
     ):
         self.harness.set_leader(is_leader=True)
         mme_ipv4_address = "invalid ipv4 address"
-        self.harness.add_relation(
+        relation_id = self.harness.add_relation(
             relation_name=self.relation_name, remote_app=self.remote_app_name
         )
 
         with pytest.raises(AddressValueError):
             self.harness.charm.lte_core_provider.set_lte_core_information(
-                mme_ipv4_address=mme_ipv4_address
+                mme_ipv4_address=mme_ipv4_address,
+                relation_id=relation_id,
             )

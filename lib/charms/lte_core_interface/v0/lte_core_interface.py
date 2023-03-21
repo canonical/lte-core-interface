@@ -83,7 +83,9 @@ class DummyLTECoreProviderCharm(CharmBase):
             return
         mme_ipv4_address = "<Here goes your code for fetching the MME IPv4 address>"
         try:
-            self.lte_core_provider.set_lte_core_information(mme_ipv4_address=mme_ipv4_address)
+            self.lte_core_provider.set_lte_core_information(
+              mme_ipv4_address=mme_ipv4_address, relation_id=event.relation.id
+            )
         except AddressValueError:
             self.unit.status = BlockedStatus("Invalid MME IPv4 address.")
 
@@ -229,19 +231,20 @@ class LTECoreProvides(Object):
         except AddressValueError:  # noqa: E722
             return False
 
-    def set_lte_core_information(self, mme_ipv4_address: str) -> None:
+    def set_lte_core_information(self, mme_ipv4_address: str, relation_id: int) -> None:
         """Sets mme_ipv4_address in the application relation data.
 
         Args:
             mme_ipv4_address: MME ipv4 address
+            relation_id: Relation ID
         Returns:
             None
         Raises:
             AddressValueError: If mme_ipv4_address is not a valid IPv4 address
         """
-        if not self.model.get_relation(self.relationship_name):
+        relation = self.model.get_relation(self.relationship_name, relation_id=relation_id)
+        if not relation:
             raise RuntimeError(f"Relation {self.relationship_name} not created yet.")
         if not self._mme_ipv4_address_is_valid(mme_ipv4_address):
             raise AddressValueError("Invalid MME IPv4 address.")
-        relation = self.model.get_relation(self.relationship_name)
-        relation.data[self.charm.app].update({"mme_ipv4_address": mme_ipv4_address})  # type: ignore[union-attr]  # noqa: E501
+        relation.data[self.charm.app].update({"mme_ipv4_address": mme_ipv4_address})
